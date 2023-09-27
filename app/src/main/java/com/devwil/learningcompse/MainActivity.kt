@@ -1,7 +1,11 @@
 package com.devwil.learningcompse
 
+import android.app.Application
+import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -33,6 +37,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.material3.Button
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat.startActivity
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,13 +52,27 @@ class MainActivity : ComponentActivity() {
             // imageCardWithModifiers()
             // imageCardWithMaterialUiTheme()
             // ConversationWithDefaultMessages(SampleMessagesData.conversationSample)
-            ConversationWithAnimation(SampleMessagesData.conversationSample)
+            // ConversationWithAnimation(SampleMessagesData.conversationSample)
+
+            activityPassButton()
         }
     }
 }
 
 data class User(val name: String, val lastname: String)
 data class Message(val userName: String, val message: String)
+
+@Composable
+fun activityPassButton() {
+    val context = LocalContext.current
+    Button(onClick = {
+        Toast.makeText(context, "By pass Activity", Toast.LENGTH_SHORT).show()
+        val intent = Intent(context, CountActivity::class.java)
+        startActivity(context, intent, null)
+    }) {
+        Text(text = "Go to counter view")
+    }
+}
 
 // this function receives a param to show a text
 @Composable
@@ -288,7 +309,9 @@ fun messageTextCardWithAnimation(user: User, message: Message) {
                 // surfaceColor color will be changing gradually from primary to surface
                 color = surfaceColor,
                 // animateContentSize will change the Surface size gradually
-                modifier = Modifier.animateContentSize().padding(1.dp)
+                modifier = Modifier
+                    .animateContentSize()
+                    .padding(1.dp)
             ) {
                 Text(
                     text = "${message.message}",
