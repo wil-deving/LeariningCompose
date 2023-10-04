@@ -3,6 +3,9 @@ package com.devwil.learningcompse
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -23,6 +26,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.saveable.rememberSaveable
 
 class OnBoardingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +37,8 @@ class OnBoardingActivity : ComponentActivity() {
             LearningCompseTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    MyApp()
+                    //MyApp() // hositing state
+                    LazyGreetings() // lazy loading greetings
                 }
             }
         }
@@ -74,7 +81,6 @@ fun OnboardingScreen(
     }
 }
 
-
 @Composable
 private fun Greetings(
     onBackClicked: () -> Unit,
@@ -94,9 +100,29 @@ private fun Greetings(
 @Composable
 private fun Greeting(name: String) {
 
+    // rememberSaveable vs remember
+    /**
+     * rememberSaveable remember including when screen is rotated or process is death
+     */
     val expanded = remember { mutableStateOf(false) }
+    //val expanded = rememberSaveable { mutableStateOf(false) }
 
-    val extraPadding = if (expanded.value) 48.dp else 0.dp
+    // animation 1
+    val extraPadding by animateDpAsState(
+        if (expanded.value) 48.dp else 0.dp
+    )
+
+
+    // animation 2
+    /*
+    val extraPadding by animateDpAsState(
+        if (expanded.value) 48.dp else 0.dp,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        )
+    )
+     */
 
     Surface(
         color = MaterialTheme.colorScheme.primary,
@@ -115,6 +141,19 @@ private fun Greeting(name: String) {
             ) {
                 Text(if (expanded.value) "Show less" else "Show more")
             }
+        }
+    }
+}
+
+// Build greetings by using lazy column
+@Composable
+private fun LazyGreetings(
+    modifier: Modifier = Modifier,
+    names: List<String> = List(1000) { "$it" }
+) {
+    LazyColumn(modifier = modifier.padding(vertical = 4.dp)) {
+        items(items = names) { name ->
+            Greeting(name = name)
         }
     }
 }
