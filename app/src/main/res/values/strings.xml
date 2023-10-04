@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">LearningCompse</string>
     <string name="title_activity_count">CountActivity</string>
+    <string name="title_activity_on_boarding">OnBoardingActivity</string>
 </resources>
